@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video.js Live Streaming</title>
+    <!-- Video.js CSS from UNPKG -->
+    <link href="https://unpkg.com/video.js/dist/video-js.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #sidebar {
+            width: 100%;
+            max-width: 300px;
+            background: #f4f4f4;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        #sidebar .channel-item {
+            font-size: 1.5em; /* Increase font size */
+        }
+        #sidebar .source-item {
+            font-size: 1.5em; /* Increase font size */
+        }
+        #sidebar .channel-item,
+        #sidebar .source-item {
+            padding: 15px 20px; /* Increase padding */
+        }
+        #sidebar .channel-item.active {
+            background-color: #ddd;
+        }
+        #sidebar .channel-item:hover,
+        #sidebar .source-item:hover {
+            background-color: #ddd;
+            border-radius: 4px;
+        }
+        #main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        #source-selection {
+            display: flex;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .source-item {
+            display: inline-block;
+            margin-right: 10px;
+            padding: 10px 20px;
+            background-color: #eee;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .source-item.active {
+            background-color: #ddd;
+        }
+        #video-container {
+            flex-grow: 1;
+            position: relative;
+        }
+        #video-player {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #sidebar {
+                width: 100%;
+                max-width: none;
+                height: auto;
+                box-shadow: none;
+                position: relative;
+                z-index: 1;
+            }
+            #main-content {
+                flex-direction: column;
+            }
+            #sidebar .channel-item,
+            #sidebar .source-item {
+                font-size: 1em; /* Adjust font size for smaller screens */
+                padding: 10px; /* Adjust padding for smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <!-- Channel list with data-src for main source and data-alternates for alternate sources -->
+        <div class="channel-item" data-src="https://streaming.skynetconnect.online/live/210.m3u8" data-alternates='["http://ott-cdn.ucom.am/s14/index.m3u8"]'>perve kanal</div>
+        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/2961" data-alternates='["http://ott-cdn.ucom.am/s15/index.m3u8", "http://s18209.cdn.ngenix.net/hls/CH_R04_ROSSIA1/playlist.m3u8"]'>Russia 1</div>
+        <div class="channel-item" data-src="https://tvchannelstream1.tvzvezda.ru/cdn/tvzvezda/playlist.m3u8" data-alternates='["https://tvzvezda.bonus-tv.ru/cdn/tvzvezda/playlist.m3u8"]'>zvezda</div>
+        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/21" data-alternates='["https://uiptv.do.am/1ufc/000000006/playlist.m3u8", "https://streaming.skynetconnect.online/live/30.m3u8"]'>Russia 24</div>
+        <div class="channel-item" data-src="https://cdn.ntv.ru/unknown_russia/playlist.m3u8" data-alternates='["https://cdn.ntv.ru/unknown_russia/playlist.m3u8"]'>Unknown Russia</div>
+    </div>
+    <div id="main-content">
+        <div id="source-selection">
+            <!-- Source buttons will be dynamically added here -->
+        </div>
+        <div id="video-container">
+            <video id="video-player" class="video-js vjs-default-skin" controls preload="auto">
+                <!-- Default source (can be updated dynamically) -->
+                <source src="" type="application/x-mpegURL">
+            </video>
+        </div>
+    </div>
+
+    <!-- Video.js and its dependencies from UNPKG -->
+    <script src="https://unpkg.com/video.js/dist/video.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var player = videojs('video-player', {
+                autoplay: true,
+                preload: 'auto'
+            });
+
+            player.volume(1.0);
+
+            player.on('loadedmetadata', function () {
+                var tracks = player.textTracks();
+                for (var i = 0; i < tracks.length; i++) {
+                    tracks[i].mode = 'disabled';
+                }
+            });
+
+            var sourceSelection = document.getElementById('source-selection');
+            var channelItems = document.querySelectorAll('.channel-item');
+
+            var currentChannel = null;
+
+            function loadChannel(channelItem) {
+                var mainSrc = channelItem.getAttribute('data-src');
+                var alternates = JSON.parse(channelItem.getAttribute('data-alternates') || '[]');
+
+                sourceSelection.innerHTML = '';
+
+                var mainButton = document.createElement('div');
+                mainButton.className = 'source-item active';
+                mainButton.textContent = 'Main';
+                mainButton.setAttribute('data-src', mainSrc);
+                sourceSelection.appendChild(mainButton);
+
+                alternates.forEach(function(src, index) {
+                    var button = document.createElement('div');
+                    button.className = 'source-item';
+                    button.textContent = 'Alternate ' + (index + 1);
+                    button.setAttribute('data-src', src);
+                    sourceSelection.appendChild(button);
+                });
+
+                sourceSelection.querySelectorAll('.source-item').forEach(function(btn) {
+                    btn.addEventListener('click', function () {
+                        var newSrc = btn.getAttribute('data-src');
+                        player.src({ type: 'application/x-mpegURL', src: newSrc });
+                        player.play();
+
+                        sourceSelection.querySelectorAll('.source-item').forEach(function(button) {
+                            button.classList.remove('active');
+                        });
+                        btn.classList.add('active');
+                    });
+                });
+
+                player.src({ type: 'application/x-mpegURL', src: mainSrc });
+                player.play();
+
+                mainButton.classList.add('active');
+            }
+
+            channelItems.forEach(function (item) {
+                item.addEventListener('click', function () {
+                    if (currentChannel !== item) {
+                        currentChannel = item;
+                        loadChannel(item);
+                    }
+                });
+            });
+
+            if (channelItems.length > 0) {
+                loadChannel(channelItems[0]);
+            }
+        });
+    </script>
+</body>
+</html>
