@@ -69,6 +69,7 @@
             flex-grow: 1;
             position: relative;
             overflow: hidden; /* Ensure no overflow */
+            padding-top: 50px; /* Space for the rotate button */
         }
         #video-player {
             width: 100%;
@@ -78,7 +79,8 @@
         #rotate-button {
             position: absolute;
             top: 10px;
-            right: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             background-color: #007bff;
             color: white;
             border: none;
@@ -124,11 +126,11 @@
             <!-- Source buttons will be dynamically added here -->
         </div>
         <div id="video-container">
+            <button id="rotate-button">Rotate</button>
             <video id="video-player" class="video-js vjs-default-skin" controls preload="auto">
                 <!-- Default source (can be updated dynamically) -->
                 <source src="" type="application/x-mpegURL">
             </video>
-            <button id="rotate-button">Rotate</button>
         </div>
     </div>
 
