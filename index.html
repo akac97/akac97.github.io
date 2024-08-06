@@ -13,7 +13,6 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
-            position: relative;
         }
         #sidebar {
             width: 100%;
@@ -68,24 +67,10 @@
         #video-container {
             flex-grow: 1;
             position: relative;
-            overflow: hidden; /* Ensure no overflow */
         }
         #video-player {
             width: 100%;
             height: 100%;
-            transition: transform 0.3s ease; /* Smooth transition for rotation */
-        }
-        #rotate-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1;
         }
 
         /* Responsive Design */
@@ -128,7 +113,6 @@
                 <!-- Default source (can be updated dynamically) -->
                 <source src="" type="application/x-mpegURL">
             </video>
-            <button id="rotate-button">Rotate</button>
         </div>
     </div>
 
@@ -152,16 +136,8 @@
 
             var sourceSelection = document.getElementById('source-selection');
             var channelItems = document.querySelectorAll('.channel-item');
-            var rotateButton = document.getElementById('rotate-button');
-            var videoPlayer = document.getElementById('video-player');
 
             var currentChannel = null;
-            var rotationDegree = getCookie('video-rotation') || 0;
-
-            function setRotation(degree) {
-                videoPlayer.style.transform = `rotate(${degree}deg)`;
-                setCookie('video-rotation', degree, 365);
-            }
 
             function loadChannel(channelItem) {
                 var mainSrc = channelItem.getAttribute('data-src');
@@ -202,32 +178,6 @@
                 mainButton.classList.add('active');
             }
 
-            function setCookie(name, value, days) {
-                var expires = "";
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    expires = "; expires=" + date.toUTCString();
-                }
-                document.cookie = name + "=" + (value || "") + expires + "; path=/";
-            }
-
-            function getCookie(name) {
-                var nameEQ = name + "=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-                }
-                return null;
-            }
-
-            rotateButton.addEventListener('click', function () {
-                rotationDegree = (parseInt(rotationDegree) + 180) % 360;
-                setRotation(rotationDegree);
-            });
-
             channelItems.forEach(function (item) {
                 item.addEventListener('click', function () {
                     if (currentChannel !== item) {
@@ -240,8 +190,6 @@
             if (channelItems.length > 0) {
                 loadChannel(channelItems[0]);
             }
-
-            setRotation(rotationDegree);
         });
     </script>
 </body>
