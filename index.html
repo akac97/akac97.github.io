@@ -13,56 +13,44 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
         }
         #sidebar {
             width: 100%;
-            max-width: 300px;
-            background: #f4f4f4;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            max-width: 250px; /* Adjusted width */
+            background: #1e1e1e; /* Dark sidebar background */
+            padding: 15px; /* Adjusted padding */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
             overflow-y: auto;
             flex-shrink: 0;
         }
         #sidebar .channel-item {
-            font-size: 1.5em; /* Increase font size */
-        }
-        #sidebar .source-item {
-            font-size: 1.5em; /* Increase font size */
-        }
-        #sidebar .channel-item,
-        #sidebar .source-item {
-            padding: 15px 20px; /* Increase padding */
+            font-size: 1.5em; /* Larger font size */
+            padding: 15px 20px; /* Larger padding */
+            color: #e0e0e0; /* Light text color */
+            background-color: #1e1e1e; /* Dark background for items */
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: background-color 0.3s, border-color 0.3s;
+            cursor: pointer; /* Indicate item is clickable */
         }
         #sidebar .channel-item.active {
-            background-color: #ddd;
+            background-color: #333; /* Slightly lighter dark for active item */
+            border-color: #666; /* Border color for active item */
         }
         #sidebar .channel-item:hover,
-        #sidebar .source-item:hover {
-            background-color: #ddd;
+        #sidebar .channel-item:focus {
+            background-color: #333; /* Hover effect */
             border-radius: 4px;
+            outline: none; /* Remove default focus outline */
+            border: 2px solid #666; /* Custom focus outline */
         }
         #main-content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             height: 100%;
-        }
-        #source-selection {
-            display: flex;
-            margin-bottom: 10px;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        .source-item {
-            display: inline-block;
-            margin-right: 10px;
-            padding: 10px 20px;
-            background-color: #eee;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .source-item.active {
-            background-color: #ddd;
         }
         #video-container {
             flex-grow: 1;
@@ -86,28 +74,24 @@
             #main-content {
                 flex-direction: column;
             }
-            #sidebar .channel-item,
-            #sidebar .source-item {
-                font-size: 1em; /* Adjust font size for smaller screens */
-                padding: 10px; /* Adjust padding for smaller screens */
+            #sidebar .channel-item {
+                font-size: 1.2em; /* Adjust font size for smaller screens */
+                padding: 10px 15px; /* Adjust padding for smaller screens */
             }
         }
     </style>
 </head>
 <body>
-    <div id="sidebar">
-        <!-- Channel list with data-src for main source and data-alternates for alternate sources -->
-        <div class="channel-item" data-src="https://streaming.skynetconnect.online/live/210.m3u8" data-alternates='["http://ott-cdn.ucom.am/s14/index.m3u8"]'>perve kanal</div>
-        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/2961" data-alternates='["http://ott-cdn.ucom.am/s15/index.m3u8", "http://s18209.cdn.ngenix.net/hls/CH_R04_ROSSIA1/playlist.m3u8"]'>Russia 1</div>
-        <div class="channel-item" data-src="https://tvchannelstream1.tvzvezda.ru/cdn/tvzvezda/playlist.m3u8" data-alternates='["https://tvzvezda.bonus-tv.ru/cdn/tvzvezda/playlist.m3u8"]'>zvezda</div>
-        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/21" data-alternates='["https://uiptv.do.am/1ufc/000000006/playlist.m3u8", "https://streaming.skynetconnect.online/live/30.m3u8"]'>Russia 24</div>
-        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/63254" data-alternates='["https://streaming.thestream.cyou/live/211.m3u8"]'>Russia RTR</div>
-        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/63254" data-alternates='["https://player.smotrim.ru/iframe/stream/live_id/4941"]'>Planeta RTR</div>
+    <div id="sidebar" role="navigation" aria-label="Channel List">
+        <!-- Channel list with data-src for main source -->
+        <div class="channel-item" data-src="https://streaming.skynetconnect.online/live/210.m3u8" role="button" tabindex="0" aria-label="Pervy Kanal">Pervy Kanal</div>
+        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/2961" role="button" tabindex="0" aria-label="Russia 1">Russia 1</div>
+        <div class="channel-item" data-src="https://tvchannelstream1.tvzvezda.ru/cdn/tvzvezda/playlist.m3u8" role="button" tabindex="0" aria-label="Zvezda">Zvezda</div>
+        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/21" role="button" tabindex="0" aria-label="Russia 24">Russia 24</div>
+        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/63254" role="button" tabindex="0" aria-label="Russia RTR">Russia RTR</div>
+        <div class="channel-item" data-src="https://player.smotrim.ru/iframe/stream/live_id/63254" role="button" tabindex="0" aria-label="Planeta RTR">Planeta RTR</div>
     </div>
     <div id="main-content">
-        <div id="source-selection">
-            <!-- Source buttons will be dynamically added here -->
-        </div>
         <div id="video-container">
             <video id="video-player" class="video-js vjs-default-skin" controls preload="auto">
                 <!-- Default source (can be updated dynamically) -->
@@ -134,48 +118,19 @@
                 }
             });
 
-            var sourceSelection = document.getElementById('source-selection');
             var channelItems = document.querySelectorAll('.channel-item');
-
             var currentChannel = null;
 
             function loadChannel(channelItem) {
                 var mainSrc = channelItem.getAttribute('data-src');
-                var alternates = JSON.parse(channelItem.getAttribute('data-alternates') || '[]');
-
-                sourceSelection.innerHTML = '';
-
-                var mainButton = document.createElement('div');
-                mainButton.className = 'source-item active';
-                mainButton.textContent = 'Main';
-                mainButton.setAttribute('data-src', mainSrc);
-                sourceSelection.appendChild(mainButton);
-
-                alternates.forEach(function(src, index) {
-                    var button = document.createElement('div');
-                    button.className = 'source-item';
-                    button.textContent = 'Alternate ' + (index + 1);
-                    button.setAttribute('data-src', src);
-                    sourceSelection.appendChild(button);
-                });
-
-                sourceSelection.querySelectorAll('.source-item').forEach(function(btn) {
-                    btn.addEventListener('click', function () {
-                        var newSrc = btn.getAttribute('data-src');
-                        player.src({ type: 'application/x-mpegURL', src: newSrc });
-                        player.play();
-
-                        sourceSelection.querySelectorAll('.source-item').forEach(function(button) {
-                            button.classList.remove('active');
-                        });
-                        btn.classList.add('active');
-                    });
-                });
 
                 player.src({ type: 'application/x-mpegURL', src: mainSrc });
                 player.play();
 
-                mainButton.classList.add('active');
+                document.querySelectorAll('.channel-item').forEach(function(item) {
+                    item.classList.remove('active');
+                });
+                channelItem.classList.add('active');
             }
 
             channelItems.forEach(function (item) {
@@ -183,6 +138,14 @@
                     if (currentChannel !== item) {
                         currentChannel = item;
                         loadChannel(item);
+                    }
+                });
+                item.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        if (currentChannel !== item) {
+                            currentChannel = item;
+                            loadChannel(item);
+                        }
                     }
                 });
             });
